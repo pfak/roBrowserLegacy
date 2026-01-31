@@ -140,7 +140,7 @@ define(function (require) {
 			EntityManager.add(entity);
 		}
 
-		if (pkt.effectState & StatusState.EffectState.FALCON && ([11, 4012, 4034, 4056, 4062, 4098, 4257, 4270, 4278].includes(pkt.job))) {
+		if (pkt.effectState === StatusState.EffectState.FALCON && ([11, 4012, 4034, 4056, 4062, 4098, 4257].includes(pkt.job))) {
 			if (!entity.falcon)
 				entity.falcon = new Entity();
 
@@ -156,16 +156,14 @@ define(function (require) {
 				hideShadow: true,
 			});
 			EntityManager.add(entity.falcon);
-		}
-		if (pkt.effectState & StatusState.EffectState.WUG) {
+		} else if (pkt.effectState === StatusState.EffectState.WUG) {
 			if (!entity.wug)
 				entity.wug = new Entity();
-
 			entity.wug.set({
 				objecttype: entity.wug.constructor.TYPE_WUG,
 				GID: entity.GID + '_WUG',
 				PosDir: [entity.position[0], entity.position[1], 0],
-				job: entity.job + '_WUG',
+				job: 'WUG',
 				speed: entity.walk.speed,
 				name: "",
 				hp: -1,
@@ -216,9 +214,9 @@ define(function (require) {
 
 		if (entity.objecttype === Entity.TYPE_PC &&
 			!(entity._effectState & StatusState.EffectState.INVISIBLE) &&
-			(pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY || pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY2 || pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY3  
-				|| pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY4 || pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY5 || pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY6  
-				|| pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY7 || pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY10 || pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY11)
+			(pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY || pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY2 || pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY3
+				|| pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY4 || pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY5 || pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY6
+				|| pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY7 || pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY8 || pkt instanceof PACKET.ZC.NOTIFY_NEWENTRY9)
 		) {
 			var EF_Init_Par = {
 				ownerAID: entity.GID,
@@ -322,8 +320,7 @@ define(function (require) {
 					if (entity.falcon) {
 						entity.falcon.remove(pkt.type);
 						entity.falcon = null;
-					}
-					if (entity.wug) {
+					} else if (entity.wug) {
 						entity.wug.remove(pkt.type);
 						entity.wug = null;
 					}
@@ -333,8 +330,7 @@ define(function (require) {
 					if (entity.falcon) {
 						entity.falcon.remove(pkt.type);
 						entity.falcon = null;
-					}
-					if (entity.wug) {
+					} else if (entity.wug) {
 						entity.wug.remove(pkt.type);
 						entity.wug = null;
 					}
@@ -1162,11 +1158,10 @@ define(function (require) {
 						PosDir: [entity.position[0], entity.position[1], 0],
 						job: entity.job + '_FALCON',
 					});
-				}
-				if (entity.wug) {
+				} else if (entity.wug) {
 					entity.wug.set({
 						PosDir: [entity.position[0], entity.position[1], 0],
-						job: entity.job + '_WUG',
+						job: 'WUG',
 					});
 				}
 				break;
@@ -2200,7 +2195,7 @@ define(function (require) {
 				objecttype: entity.wug.constructor.TYPE_WUG,
 				GID: entity.GID + '_WUG',
 				PosDir: [entity.position[0], entity.position[1], 0],
-				job: entity.job + '_WUG',
+				job: 'WUG',
 				speed: entity.walk.speed,
 				name: "",
 				hp: -1,
@@ -2533,15 +2528,15 @@ define(function (require) {
 		Network.hookPacket(PACKET.ZC.NOTIFY_STANDENTRY6, onEntitySpam);
 		Network.hookPacket(PACKET.ZC.NOTIFY_NEWENTRY6, onEntitySpam);
 		Network.hookPacket(PACKET.ZC.NOTIFY_MOVEENTRY6, onEntitySpam);
+		Network.hookPacket(PACKET.ZC.NOTIFY_STANDENTRY7, onEntitySpam);
 		Network.hookPacket(PACKET.ZC.NOTIFY_NEWENTRY7, onEntitySpam);
+		Network.hookPacket(PACKET.ZC.NOTIFY_MOVEENTRY7, onEntitySpam);
+		Network.hookPacket(PACKET.ZC.NOTIFY_STANDENTRY8, onEntitySpam);
+		Network.hookPacket(PACKET.ZC.NOTIFY_NEWENTRY8, onEntitySpam);
 		Network.hookPacket(PACKET.ZC.NOTIFY_MOVEENTRY8, onEntitySpam);
 		Network.hookPacket(PACKET.ZC.NOTIFY_STANDENTRY9, onEntitySpam);
-		Network.hookPacket(PACKET.ZC.NOTIFY_MOVEENTRY10, onEntitySpam);
-		Network.hookPacket(PACKET.ZC.NOTIFY_NEWENTRY10, onEntitySpam);
-		Network.hookPacket(PACKET.ZC.NOTIFY_STANDENTRY10, onEntitySpam);
-		Network.hookPacket(PACKET.ZC.NOTIFY_NEWENTRY11, onEntitySpam);
-		Network.hookPacket(PACKET.ZC.NOTIFY_MOVEENTRY11, onEntitySpam);
-		Network.hookPacket(PACKET.ZC.NOTIFY_STANDENTRY11, onEntitySpam);
+		Network.hookPacket(PACKET.ZC.NOTIFY_NEWENTRY9, onEntitySpam);
+		Network.hookPacket(PACKET.ZC.NOTIFY_MOVEENTRY9, onEntitySpam);
 		Network.hookPacket(PACKET.ZC.NOTIFY_VANISH, onEntityVanish);
 		Network.hookPacket(PACKET.ZC.NOTIFY_MOVE, onEntityMove);
 		Network.hookPacket(PACKET.ZC.STOPMOVE, onEntityStopMove);
